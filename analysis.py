@@ -5,13 +5,12 @@ import matplotlib.pyplot as plt
 WINDOW_SIZE = 1500
 SLIDING_SIZE = 200
 
+def book():
+    return "HarryPotter2.txt"
+
 def analyze():
 
-    fp = open("HarryPotter.txt")
-    data = fp.read()
-
-    words = nltk.word_tokenize(data)
-
+    words = words_of_book(book())
 
     x = []
     y = []
@@ -41,12 +40,18 @@ def plot(x, y):
     plt.axis([0, x[-1], min(y), max(y)])
     plt.show()
 
+def words_of_book(book):
+
+    fp = open(book)
+
+    data = fp.read().replace('\n', ' ')
+    words = data.split(' ')
+    return words
+
+
 def print_at(i):
 
-    fp = open("HarryPotter.txt")
-    data = fp.read()
-
-    words = nltk.word_tokenize(data)
+    words = words_of_book(book())
 
     text = words[i:i+WINDOW_SIZE]
     print " ".join(text)
@@ -56,4 +61,4 @@ plot(x, y)
 
 #print_at(x[y.index(min(y))])
 
-print_at(x[y.index(max(y))])
+print_at(x[y.index(min(y))])
