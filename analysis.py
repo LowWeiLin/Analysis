@@ -1,9 +1,11 @@
 import pyhmeter
 import nltk
+from nltk.corpus import stopwords
 import matplotlib.pyplot as plt
+from itertools import izip
 
-WINDOW_SIZE = 1500
-SLIDING_SIZE = 200
+
+stopwords = stopwords.words('english')
 
 def book():
     return "HarryPotter2.txt"
@@ -21,7 +23,9 @@ def analyze():
     for i in range(0, len(words)-WINDOW_SIZE+1, SLIDING_SIZE):
         text = words[i:i+WINDOW_SIZE]
 
-        h = pyhmeter.HMeter(text, scores).happiness_score()
+        content = [w for w in text if w.lower() not in stopwords]
+
+        h = pyhmeter.HMeter(content, scores).happiness_score()
 
         x.append(i)
         y.append(h)
@@ -48,7 +52,6 @@ def words_of_book(book):
     words = data.split(' ')
     return words
 
-
 def print_at(i):
 
     words = words_of_book(book())
@@ -56,9 +59,30 @@ def print_at(i):
     text = words[i:i+WINDOW_SIZE]
     print " ".join(text)
 
-x,y = analyze()
-plot(x, y)
+def peaks(xs, ys):
+    
+    scores = pyhmeter.load_scores("dataset.txt")
 
-#print_at(x[y.index(min(y))])
 
-print_at(x[y.index(min(y))])
+    for x, y in izip(xs, ys):
+
+        if y > 5.55:
+            
+            print_at(x)
+            
+            print "====================="
+
+LENGTH = len(words_of_book(book()))
+WINDOW_SIZE = int(LENGTH / 10)
+SLIDING_SIZE = 500
+
+print SLIDING_SIZE
+
+if __name__ == "__main__":
+    x,y = analyze()
+    plot(x, y)
+
+    #print_at(x[y.index(min(y))])
+
+    #print_at(x[y.index(max(y))])
+    peaks(x, y)
