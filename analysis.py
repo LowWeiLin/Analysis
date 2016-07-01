@@ -2,6 +2,9 @@ import pyhmeter
 import nltk
 import matplotlib.pyplot as plt
 
+WINDOW_SIZE = 1500
+SLIDING_SIZE = 200
+
 def analyze():
 
     fp = open("HarryPotter.txt")
@@ -9,8 +12,6 @@ def analyze():
 
     words = nltk.word_tokenize(data)
 
-    WINDOW_SIZE = 50
-    SLIDING_SIZE = 20
 
     x = []
     y = []
@@ -26,21 +27,33 @@ def analyze():
         x.append(i)
         y.append(h)
 
-        print i, '/', len(words)
+        # print i, '/', len(words)
         # if i > 2:
         #     break
 
-    print x
-    print y
+    # print x
+    # print y
     return x, y
 
 def plot(x, y):
 
-    plt.plot(x, y, 'ro')
-    plt.axis([0, 6370, 0, 10])
+    lines = plt.plot(x, y, 'k')
+    plt.axis([0, x[-1], min(y), max(y)])
     plt.show()
+
+def print_at(i):
+
+    fp = open("HarryPotter.txt")
+    data = fp.read()
+
+    words = nltk.word_tokenize(data)
+
+    text = words[i:i+WINDOW_SIZE]
+    print " ".join(text)
 
 x,y = analyze()
 plot(x, y)
 
+#print_at(x[y.index(min(y))])
 
+print_at(x[y.index(max(y))])
