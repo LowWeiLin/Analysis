@@ -81,7 +81,7 @@ def print_peaks(window_size, xs, ys, words_or_paragraphs=paragraphs_of_book):
     print "high is ", highs
     for x, y in izip(xs, ys):
         if y > highs:
-            print_at(window_size, x, words_or_paragraphs)
+            print_at(x, window_size, words_or_paragraphs)
             print "====================="
 
 if __name__ == "__main__":
