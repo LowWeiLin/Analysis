@@ -1,3 +1,7 @@
+import string
+from itertools import izip
+import re
+
 import pyhmeter
 import nltk
 from nltk.corpus import stopwords
@@ -6,17 +10,26 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cursor as c
 
-from itertools import izip
-
 _stopwords = stopwords.words('english')
 
 
 def book():
-    return "stories/sabriel.txt"
+    return "stories/HarryPotter.txt"
 
 
 def scores_dataset():
     return "dataset.txt"
+
+non_alpha_pattern = re.compile('[^a-zA-Z]')
+
+def strip_punctuation(text):
+    """
+    Naively strip punctuation. 
+    Unicode stuff doesn't matter since the sentiment analysis will only match 
+    on ascii words anyway.
+    """
+
+    return non_alpha_pattern.sub(' ', text)
 
 
 def words_of_book(book):
@@ -50,9 +63,8 @@ def analyze(window_size, sliding_size, words_or_paragraphs=paragraphs_of_book):
         text = units[i:i + window_size]
         paragraph_text = words_of_paragraphs(text)
 
-        content = [w for w in paragraph_text if w.lower() not in _stopwords]
-
-        h = pyhmeter.HMeter(content, scores).happiness_score()
+        # handle stopwords with deltah
+        h = pyhmeter.HMeter(paragraph_text, scores, deltah=2.0).happiness_score()
 
         x.append(i)
         y.append(h)
@@ -104,7 +116,7 @@ if __name__ == "__main__":
 
     length = len(split_book(book()))
 
-    window_size = int(length / 10)
+    window_size = length / 10
     sliding_size = window_size / 5
 
     print "length", length
