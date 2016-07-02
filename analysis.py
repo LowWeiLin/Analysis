@@ -129,4 +129,4 @@ if __name__ == "__main__":
     # print_at(x[y.index(min(y))])
 
     # print_at(x[y.index(max(y))])
-    print_peaks(window_size, x, y, split_book)
+    #print_peaks(window_size, x, y, split_book)
