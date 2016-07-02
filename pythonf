@@ -1,0 +1,4 @@
+#!/bin/bash
+PYTHON=/usr/bin/python
+export PYTHONHOME=$HOME/.pyenv/versions/2.7.10
+exec $PYTHON "$@"
