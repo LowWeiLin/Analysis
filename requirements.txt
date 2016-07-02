@@ -1,3 +1,4 @@
 nltk==3.2.1
 matplotlib==1.5.1
 vaderSentiment==0.5
+numpy==1.11.1
