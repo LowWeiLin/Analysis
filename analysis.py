@@ -3,6 +3,7 @@ import nltk
 from nltk.corpus import stopwords
 import matplotlib.pyplot as plt
 import numpy as np
+import cursor as c
 
 from itertools import izip
 
@@ -61,8 +62,11 @@ def analyze(window_size, sliding_size, words_or_paragraphs=paragraphs_of_book):
 
 
 def plot(x, y, onclick):
-    plt.connect('button_release_event', onclick)
-    lines = plt.plot(x, y, 'k')
+    fig, ax = plt.subplots()
+    cursor = c.SnaptoCursor(ax, x, y)
+    plt.connect('motion_notify_event', cursor.mouse_move)
+    plt.connect('button_release_event', onclick(cursor))
+    ax.plot(x, y, 'k')
     plt.axis([0, x[-1], min(y), max(y)])
     plt.show()
 
@@ -86,10 +90,13 @@ def print_peaks(window_size, xs, ys, words_or_paragraphs=paragraphs_of_book):
             print "====================="
 
 def onclick(window_size, words_or_paragraphs=paragraphs_of_book):
-    def handler(event):
-        x, _ = event.xdata, event.ydata
-        print_at(int(x), window_size, words_or_paragraphs)
-    return handler
+    def why(cursor):
+        def handler(event):
+            # x, _ = event.xdata, event.ydata
+            x, _ = cursor.last_x, cursor.last_y
+            print_at(int(x), window_size, words_or_paragraphs)
+        return handler
+    return why
 
 
 if __name__ == "__main__":
