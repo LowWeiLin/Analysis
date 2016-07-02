@@ -1,6 +1,7 @@
 import pyhmeter
 import nltk
 from nltk.corpus import stopwords
+from nltk.tokenize import wordpunct_tokenize
 import matplotlib.pyplot as plt
 import numpy as np
 import cursor as c
@@ -21,19 +22,19 @@ def scores_dataset():
 def words_of_book(book):
     with open(book) as f:
         data = f.read()
-    return data.replace('\n', ' ').split(' ')
+    return wordpunct_tokenize(data.replace('\n', ' ').lower())
 
 
 def paragraphs_of_book(book):
     with open(book) as f:
         data = f.read()
-    return [para.replace('\n', ' ') for para in data.split('\n\n')]
+    return [para.replace('\n', ' ').lower() for para in data.split('\n\n')]
 
 
 def words_of_paragraphs(paragraphs):
     words = []
     for paragraph in paragraphs:
-        words.extend(paragraph.split())
+        words.extend(wordpunct_tokenize(paragraph))
     return words
 
 
@@ -95,6 +96,7 @@ def onclick(window_size, words_or_paragraphs=paragraphs_of_book):
             print_at(int(x), window_size, words_or_paragraphs)
         return handler
     return why
+
 
 
 if __name__ == "__main__":
