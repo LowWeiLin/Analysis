@@ -8,11 +8,14 @@ from itertools import izip
 
 _stopwords = stopwords.words('english')
 
+
 def book():
     return "HarryPotter3.txt"
 
+
 def scores_dataset():
     return "dataset.txt"
+
 
 def words_of_book(book):
     fp = open(book)
@@ -20,11 +23,13 @@ def words_of_book(book):
     data = fp.read().replace('\n', ' ')
     return data.split(' ')
 
+
 def paragraphs_of_book(book):
     fp = open(book)
 
     data = fp.read()
     return [para.replace('\n', ' ') for para in data.split('\n\n')]
+
 
 def words_of_paragraphs(paragraphs):
     words = []
@@ -32,7 +37,8 @@ def words_of_paragraphs(paragraphs):
         words.extend(paragraph.split())
     return words
 
-def analyze(window_size, sliding_size, words_or_paragraphs = paragraphs_of_book):
+
+def analyze(window_size, sliding_size, words_or_paragraphs=paragraphs_of_book):
     units = words_or_paragraphs(book())
 
     x = []
@@ -40,8 +46,8 @@ def analyze(window_size, sliding_size, words_or_paragraphs = paragraphs_of_book)
 
     scores = pyhmeter.load_scores(scores_dataset())
 
-    for i in range(0, len(units)-window_size+1, sliding_size):
-        text = units[i:i+window_size]
+    for i in range(0, len(units) - window_size + 1, sliding_size):
+        text = units[i:i + window_size]
         paragraph_text = words_of_paragraphs(text)
 
         content = [w for w in paragraph_text if w.lower() not in _stopwords]
@@ -53,18 +59,21 @@ def analyze(window_size, sliding_size, words_or_paragraphs = paragraphs_of_book)
 
     return x, y
 
+
 def plot(x, y):
     lines = plt.plot(x, y, 'k')
     plt.axis([0, x[-1], min(y), max(y)])
     plt.show()
 
-def print_at(i, window_size, words_or_paragraphs = paragraphs_of_book):
+
+def print_at(i, window_size, words_or_paragraphs=paragraphs_of_book):
     words = words_or_paragraphs(book())
 
-    text = words[i:i+window_size]
+    text = words[i:i + window_size]
     print " ".join(text)
 
-def print_peaks(window_size, xs, ys, words_or_paragraphs = paragraphs_of_book):
+
+def print_peaks(window_size, xs, ys, words_or_paragraphs=paragraphs_of_book):
     scores = pyhmeter.load_scores(scores_dataset())
 
     highs = np.percentile(ys, 95)
@@ -79,7 +88,7 @@ if __name__ == "__main__":
     split_book = words_of_book
 
     length = len(split_book(book()))
-    
+
     window_size = int(length / 10)
     sliding_size = window_size / 5
 
@@ -87,10 +96,10 @@ if __name__ == "__main__":
     print "window", window_size
     print "slide", sliding_size
 
-    x,y = analyze(window_size, sliding_size, split_book)
+    x, y = analyze(window_size, sliding_size, split_book)
     plot(x, y)
 
-    #print_at(x[y.index(min(y))])
+    # print_at(x[y.index(min(y))])
 
-    #print_at(x[y.index(max(y))])
+    # print_at(x[y.index(max(y))])
     print_peaks(window_size, x, y, split_book)
