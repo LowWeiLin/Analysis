@@ -12,7 +12,7 @@ _stopwords = stopwords.words('english')
 
 
 def book():
-    return "sabriel.txt"
+    return "stories/sabriel.txt"
 
 
 def scores_dataset():
