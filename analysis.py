@@ -14,7 +14,7 @@ _stopwords = stopwords.words('english')
 
 
 def book():
-    return "stories/HarryPotter.txt"
+    return "stories/HarryPotter3.txt"
 
 
 def scores_dataset():
@@ -35,13 +35,13 @@ def strip_punctuation(text):
 def words_of_book(book):
     with open(book) as f:
         data = f.read()
-    return wordpunct_tokenize(data.replace('\n', ' ').lower())
+    return wordpunct_tokenize(strip_punctuation(data.replace('\n', ' ').lower()))
 
 
 def paragraphs_of_book(book):
     with open(book) as f:
         data = f.read()
-    return [para.replace('\n', ' ').lower() for para in data.split('\n\n')]
+    return [strip_punctuation(para.replace('\n', ' ').lower()) for para in data.split('\n\n')]
 
 
 def words_of_paragraphs(paragraphs):
