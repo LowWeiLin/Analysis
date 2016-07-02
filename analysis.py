@@ -2,87 +2,95 @@ import pyhmeter
 import nltk
 from nltk.corpus import stopwords
 import matplotlib.pyplot as plt
+import numpy as np
+
 from itertools import izip
 
-
-stopwords = stopwords.words('english')
+_stopwords = stopwords.words('english')
 
 def book():
-    return "HarryPotter2.txt"
+    return "HarryPotter3.txt"
 
-def analyze():
+def scores_dataset():
+    return "dataset.txt"
 
-    words = words_of_book(book())
+def words_of_book(book):
+    fp = open(book)
+
+    data = fp.read().replace('\n', ' ')
+    return data.split(' ')
+
+def paragraphs_of_book(book):
+    fp = open(book)
+
+    data = fp.read()
+    return [para.replace('\n', ' ') for para in data.split('\n\n')]
+
+def words_of_paragraphs(paragraphs):
+    words = []
+    for paragraph in paragraphs:
+        words.extend(paragraph.split())
+    return words
+
+def analyze(window_size, sliding_size, words_or_paragraphs = paragraphs_of_book):
+    units = words_or_paragraphs(book())
 
     x = []
     y = []
 
-    scores = pyhmeter.load_scores("dataset.txt")
+    scores = pyhmeter.load_scores(scores_dataset())
 
+    for i in range(0, len(units)-window_size+1, sliding_size):
+        text = units[i:i+window_size]
+        paragraph_text = words_of_paragraphs(text)
 
-    for i in range(0, len(words)-WINDOW_SIZE+1, SLIDING_SIZE):
-        text = words[i:i+WINDOW_SIZE]
-
-        content = [w for w in text if w.lower() not in stopwords]
+        content = [w for w in paragraph_text if w.lower() not in _stopwords]
 
         h = pyhmeter.HMeter(content, scores).happiness_score()
 
         x.append(i)
         y.append(h)
 
-        # print i, '/', len(words)
-        # if i > 2:
-        #     break
-
-    # print x
-    # print y
     return x, y
 
 def plot(x, y):
-
     lines = plt.plot(x, y, 'k')
     plt.axis([0, x[-1], min(y), max(y)])
     plt.show()
 
-def words_of_book(book):
+def print_at(i, window_size, words_or_paragraphs = paragraphs_of_book):
+    words = words_or_paragraphs(book())
 
-    fp = open(book)
-
-    data = fp.read().replace('\n', ' ')
-    words = data.split(' ')
-    return words
-
-def print_at(i):
-
-    words = words_of_book(book())
-
-    text = words[i:i+WINDOW_SIZE]
+    text = words[i:i+window_size]
     print " ".join(text)
 
-def peaks(xs, ys):
-    
-    scores = pyhmeter.load_scores("dataset.txt")
+def print_peaks(window_size, xs, ys, words_or_paragraphs = paragraphs_of_book):
+    scores = pyhmeter.load_scores(scores_dataset())
 
+    highs = np.percentile(ys, 95)
 
+    print "high is ", highs
     for x, y in izip(xs, ys):
-
-        if y > 5.55:
-            
-            print_at(x)
-            
+        if y > highs:
+            print_at(window_size, x, words_or_paragraphs)
             print "====================="
 
-LENGTH = len(words_of_book(book()))
-WINDOW_SIZE = int(LENGTH / 10)
-SLIDING_SIZE = 500
-
-print SLIDING_SIZE
-
 if __name__ == "__main__":
-    x,y = analyze()
+    split_book = words_of_book
+
+    length = len(split_book(book()))
+    
+    window_size = int(length / 10)
+    sliding_size = window_size / 5
+
+    print "length", length
+    print "window", window_size
+    print "slide", sliding_size
+
+    x,y = analyze(window_size, sliding_size, split_book)
     plot(x, y)
 
     #print_at(x[y.index(min(y))])
 
     #print_at(x[y.index(max(y))])
-    peaks(x, y)
+    print_peaks(window_size, x, y, split_book)
