@@ -10,7 +10,7 @@ _stopwords = stopwords.words('english')
 
 
 def book():
-    return "HarryPotter3.txt"
+    return "sabriel.txt"
 
 
 def scores_dataset():
@@ -60,7 +60,8 @@ def analyze(window_size, sliding_size, words_or_paragraphs=paragraphs_of_book):
     return x, y
 
 
-def plot(x, y):
+def plot(x, y, onclick):
+    plt.connect('button_release_event', onclick)
     lines = plt.plot(x, y, 'k')
     plt.axis([0, x[-1], min(y), max(y)])
     plt.show()
@@ -78,11 +79,18 @@ def print_peaks(window_size, xs, ys, words_or_paragraphs=paragraphs_of_book):
 
     highs = np.percentile(ys, 95)
 
-    print "high is ", highs
+    print "high is", highs
     for x, y in izip(xs, ys):
         if y > highs:
             print_at(x, window_size, words_or_paragraphs)
             print "====================="
+
+def onclick(window_size, words_or_paragraphs=paragraphs_of_book):
+    def handler(event):
+        x, _ = event.xdata, event.ydata
+        print_at(int(x), window_size, words_or_paragraphs)
+    return handler
+
 
 if __name__ == "__main__":
     split_book = words_of_book
@@ -97,7 +105,7 @@ if __name__ == "__main__":
     print "slide", sliding_size
 
     x, y = analyze(window_size, sliding_size, split_book)
-    plot(x, y)
+    plot(x, y, onclick(window_size, split_book))
 
     # print_at(x[y.index(min(y))])
 
