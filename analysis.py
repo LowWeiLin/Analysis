@@ -19,16 +19,14 @@ def scores_dataset():
 
 
 def words_of_book(book):
-    fp = open(book)
-
-    data = fp.read().replace('\n', ' ')
-    return data.split(' ')
+    with open(book) as f:
+        data = f.read()
+    return data.replace('\n', ' ').split(' ')
 
 
 def paragraphs_of_book(book):
-    fp = open(book)
-
-    data = fp.read()
+    with open(book) as f:
+        data = f.read()
     return [para.replace('\n', ' ') for para in data.split('\n\n')]
 
 
