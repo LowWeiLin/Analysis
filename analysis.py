@@ -71,6 +71,12 @@ def analyze(window_size, sliding_size, words_or_paragraphs=paragraphs_of_book):
 
     return x, y
 
+def gradient(xs, ys):
+    new_ys = []
+    for i, y in enumerate(ys[1:]):
+        new_ys.append(abs(y - ys[i -1]))
+
+    return xs[1:], new_ys
 
 def plot(x, y, onclick):
     fig, ax = plt.subplots()
@@ -116,14 +122,18 @@ if __name__ == "__main__":
 
     length = len(split_book(book()))
 
-    window_size = length / 10
-    sliding_size = window_size / 5
+    window_size = length / 12
+    sliding_size = window_size
 
     print "length", length
     print "window", window_size
     print "slide", sliding_size
 
     x, y = analyze(window_size, sliding_size, split_book)
+    x, y = gradient(x, y)
+
+    print "avg gradient", np.mean(y)
+
     plot(x, y, onclick(window_size, split_book))
 
     # print_at(x[y.index(min(y))])
