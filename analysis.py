@@ -14,7 +14,7 @@ _stopwords = stopwords.words('english')
 
 
 def book():
-    return "stories/HarryPotter3.txt"
+    return "stories/HarryPotter4.txt"
 
 
 def scores_dataset():
@@ -25,7 +25,7 @@ non_alpha_pattern = re.compile('[^a-zA-Z]')
 def strip_punctuation(text):
     """
     Naively strip punctuation. 
-    Unicode stuff doesn't matter since the sentiment analysis will only match 
+    Unicode stuff doesn't matter since HMeter will only match 
     on ascii words anyway.
     """
 
@@ -35,13 +35,13 @@ def strip_punctuation(text):
 def words_of_book(book):
     with open(book) as f:
         data = f.read()
-    return wordpunct_tokenize(strip_punctuation(data.replace('\n', ' ').lower()))
+    return wordpunct_tokenize(clean(data))
 
 
 def paragraphs_of_book(book):
     with open(book) as f:
         data = f.read()
-    return [strip_punctuation(para.replace('\n', ' ').lower()) for para in data.split('\n\n')]
+    return [clean(para) for para in data.split('\n\n')]
 
 
 def words_of_paragraphs(paragraphs):
@@ -49,6 +49,10 @@ def words_of_paragraphs(paragraphs):
     for paragraph in paragraphs:
         words.extend(wordpunct_tokenize(paragraph))
     return words
+
+
+def clean(text):
+    return strip_punctuation(text.replace('\n', ' ').lower())
 
 
 def analyze(window_size, sliding_size, words_or_paragraphs=paragraphs_of_book):
@@ -71,12 +75,6 @@ def analyze(window_size, sliding_size, words_or_paragraphs=paragraphs_of_book):
 
     return x, y
 
-def gradient(xs, ys):
-    new_ys = []
-    for i, y in enumerate(ys[1:]):
-        new_ys.append(abs(y - ys[i -1]))
-
-    return xs[1:], new_ys
 
 def plot(x, y, onclick):
     fig, ax = plt.subplots()
@@ -93,6 +91,7 @@ def print_at(i, window_size, words_or_paragraphs=paragraphs_of_book):
 
     text = words[i:i + window_size]
     print " ".join(text)
+    print "========"
 
 
 def print_peaks(window_size, xs, ys, words_or_paragraphs=paragraphs_of_book):
@@ -123,20 +122,12 @@ if __name__ == "__main__":
     length = len(split_book(book()))
 
     window_size = length / 12
-    sliding_size = window_size
+    sliding_size = window_size / 5
 
     print "length", length
     print "window", window_size
     print "slide", sliding_size
 
     x, y = analyze(window_size, sliding_size, split_book)
-    x, y = gradient(x, y)
-
-    print "avg gradient", np.mean(y)
 
     plot(x, y, onclick(window_size, split_book))
-
-    # print_at(x[y.index(min(y))])
-
-    # print_at(x[y.index(max(y))])
-    #print_peaks(window_size, x, y, split_book)
